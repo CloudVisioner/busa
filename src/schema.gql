@@ -1,0 +1,335 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  email: String!
+  role: RoleEnum!
+  token: String!
+}
+
+input CreateEventInput {
+  coverPhoto: String!
+  date: String!
+  description: String!
+  isUpcoming: Boolean! = false
+  location: String!
+  photos: [String!]! = []
+  slug: String!
+  title: String!
+  type: EventTypeEnum!
+}
+
+input CreateGalleryPhotoInput {
+  alt: String!
+  event: String!
+  eventName: String!
+  src: String!
+  year: Int!
+}
+
+input CreateProjectInput {
+  aboutParagraphs: [String!]
+  aboutTitle: String
+  category: String!
+  coverPhoto: String!
+  ctaPrimaryLabel: String
+  ctaSecondaryLabel: String
+  ctaSubtitle: String
+  ctaTitle: String
+  description: String!
+  features: JSON
+  galleryImages: JSON
+  gallerySubtitle: String
+  galleryTitle: String
+  heroDisplayTitle: String
+  heroEyebrow: String
+  heroImage: String
+  heroSubtitle: String
+  isFeatured: Boolean! = false
+  processSteps: JSON
+  processTitle: String
+  slug: String!
+  summary: String!
+  tags: [String!]!
+  title: String!
+}
+
+input CreateTeamMemberInput {
+  name: String!
+  nimaqildi: String
+  order: Int! = 0
+  photo: String
+  quote: String
+  role: String!
+  year: Int!
+}
+
+input CreateTimelineEntryInput {
+  achievements: [String!]!
+  description: String!
+  isDark: Boolean! = false
+  order: Int! = 0
+  presidentName: String!
+  presidentPhoto: String
+  title: String!
+  year: String!
+}
+
+input CreateVisaArticleInput {
+  author: String! = "Admin"
+  content: String!
+  description: String!
+  featureImage: String
+  isOutdated: Boolean! = false
+  outdatedLink: String
+  readTime: Int!
+  slug: String!
+  title: String!
+  visaType: VisaTypeEnum!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type EventObject {
+  coverPhoto: String!
+  createdAt: DateTime!
+  date: String!
+  description: String!
+  id: ID!
+  isUpcoming: Boolean!
+  location: String!
+  photos: [String!]!
+  slug: String!
+  title: String!
+  type: EventTypeEnum!
+  updatedAt: DateTime!
+}
+
+enum EventTypeEnum {
+  EDUCATION
+  MADANIY
+  SPORT
+  TRIP
+  WORKSHOP
+}
+
+type GalleryPhotoObject {
+  alt: String!
+  createdAt: DateTime!
+  event: String!
+  eventName: String!
+  id: ID!
+  src: String!
+  year: Int!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  createEvent(input: CreateEventInput!): EventObject!
+  createGalleryPhoto(input: CreateGalleryPhotoInput!): GalleryPhotoObject!
+  createProject(input: CreateProjectInput!): ProjectObject!
+  createTeamMember(input: CreateTeamMemberInput!): TeamMemberObject!
+  createTimelineEntry(input: CreateTimelineEntryInput!): TimelineEntryObject!
+  createVisaArticle(input: CreateVisaArticleInput!): VisaArticleObject!
+  deleteEvent(id: String!): EventObject!
+  deleteGalleryPhoto(id: String!): GalleryPhotoObject!
+  deleteProject(id: String!): ProjectObject!
+  deleteTeamMember(id: String!): TeamMemberObject!
+  deleteTimelineEntry(id: String!): TimelineEntryObject!
+  deleteVisaArticle(id: String!): VisaArticleObject!
+  login(input: LoginInput!): AuthResponse!
+  updateEvent(id: String!, input: UpdateEventInput!): EventObject!
+  updateProject(id: String!, input: UpdateProjectInput!): ProjectObject!
+  updateTeamMember(id: String!, input: UpdateTeamMemberInput!): TeamMemberObject!
+  updateTimelineEntry(id: String!, input: UpdateTimelineEntryInput!): TimelineEntryObject!
+  updateVisaArticle(id: String!, input: UpdateVisaArticleInput!): VisaArticleObject!
+}
+
+type ProjectObject {
+  aboutParagraphs: [String!]
+  aboutTitle: String
+  category: String!
+  coverPhoto: String!
+  createdAt: DateTime!
+  ctaPrimaryLabel: String
+  ctaSecondaryLabel: String
+  ctaSubtitle: String
+  ctaTitle: String
+  description: String!
+  features: JSON
+  galleryImages: JSON
+  gallerySubtitle: String
+  galleryTitle: String
+  heroDisplayTitle: String
+  heroEyebrow: String
+  heroImage: String
+  heroSubtitle: String
+  id: ID!
+  isFeatured: Boolean!
+  processSteps: JSON
+  processTitle: String
+  slug: String!
+  summary: String!
+  tags: [String!]!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Query {
+  event(slug: String!): EventObject
+  events(limit: Int! = 9, page: Int! = 1): [EventObject!]!
+  featuredProjects: [ProjectObject!]!
+  galleryPhotos: [GalleryPhotoObject!]!
+  galleryPhotosByEvent(event: String!): [GalleryPhotoObject!]!
+  galleryPhotosByYear(year: Int!): [GalleryPhotoObject!]!
+  health: String!
+  project(slug: String!): ProjectObject
+  projects: [ProjectObject!]!
+  teamMember(id: String!): TeamMemberObject
+  teamMembers: [TeamMemberObject!]!
+  timeline: [TimelineEntryObject!]!
+  upcomingEvents: [EventObject!]!
+  visaArticle(slug: String!): VisaArticleObject
+  visaArticles: [VisaArticleObject!]!
+  visaArticlesByType(visaType: VisaTypeEnum!): [VisaArticleObject!]!
+}
+
+enum RoleEnum {
+  ADMIN
+  SUPER_ADMIN
+}
+
+type TeamMemberObject {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  nimaqildi: String
+  order: Int!
+  photo: String
+  quote: String
+  role: String!
+  updatedAt: DateTime!
+  year: Int!
+}
+
+type TimelineEntryObject {
+  achievements: [String!]!
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  isDark: Boolean!
+  order: Int!
+  presidentName: String!
+  presidentPhoto: String
+  title: String!
+  year: String!
+}
+
+input UpdateEventInput {
+  coverPhoto: String
+  date: String
+  description: String
+  isUpcoming: Boolean
+  location: String
+  photos: [String!]
+  slug: String
+  title: String
+  type: EventTypeEnum
+}
+
+input UpdateProjectInput {
+  aboutParagraphs: [String!]
+  aboutTitle: String
+  category: String
+  coverPhoto: String
+  ctaPrimaryLabel: String
+  ctaSecondaryLabel: String
+  ctaSubtitle: String
+  ctaTitle: String
+  description: String
+  features: JSON
+  galleryImages: JSON
+  gallerySubtitle: String
+  galleryTitle: String
+  heroDisplayTitle: String
+  heroEyebrow: String
+  heroImage: String
+  heroSubtitle: String
+  isFeatured: Boolean
+  processSteps: JSON
+  processTitle: String
+  slug: String
+  summary: String
+  tags: [String!]
+  title: String
+}
+
+input UpdateTeamMemberInput {
+  name: String
+  nimaqildi: String
+  order: Int
+  photo: String
+  quote: String
+  role: String
+  year: Int
+}
+
+input UpdateTimelineEntryInput {
+  achievements: [String!]
+  description: String
+  isDark: Boolean
+  order: Int
+  presidentName: String
+  presidentPhoto: String
+  title: String
+  year: String
+}
+
+input UpdateVisaArticleInput {
+  author: String
+  content: String
+  description: String
+  featureImage: String
+  isOutdated: Boolean
+  outdatedLink: String
+  readTime: Int
+  slug: String
+  title: String
+  visaType: VisaTypeEnum
+}
+
+type VisaArticleObject {
+  author: String!
+  content: String!
+  createdAt: DateTime!
+  description: String!
+  featureImage: String
+  id: ID!
+  isOutdated: Boolean!
+  outdatedLink: String
+  readTime: Int!
+  slug: String!
+  title: String!
+  updatedAt: DateTime!
+  visaType: VisaTypeEnum!
+}
+
+enum VisaTypeEnum {
+  D2
+  D10
+  E7
+  GENERAL
+}

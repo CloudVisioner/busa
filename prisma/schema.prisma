@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  date        String
+  location    String
+  description String
+  coverPhoto  String
+  type        EventType
+  isUpcoming  Boolean   @default(false)
+  photos      String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum EventType {
+  MADANIY
+  TRIP
+  SPORT
+  WORKSHOP
+  EDUCATION
+}
+
+model Project {
+  id                String   @id @default(cuid())
+  title             String
+  slug              String   @unique
+  summary           String
+  description       String
+  coverPhoto        String
+  category          String
+  tags              String[]
+  isFeatured        Boolean  @default(false)
+  heroImage         String?
+  heroEyebrow       String?
+  heroDisplayTitle  String?
+  heroSubtitle      String?
+  aboutTitle        String?
+  aboutParagraphs   String[]
+  features          Json?
+  processTitle      String?
+  processSteps      Json?
+  galleryTitle      String?
+  gallerySubtitle   String?
+  galleryImages     Json?
+  ctaTitle          String?
+  ctaSubtitle       String?
+  ctaPrimaryLabel   String?
+  ctaSecondaryLabel String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model VisaArticle {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  content      String
+  visaType     VisaType
+  readTime     Int
+  description  String
+  isOutdated   Boolean  @default(false)
+  outdatedLink String?
+  featureImage String?
+  author       String   @default("Admin")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum VisaType {
+  D2
+  D10
+  E7
+  GENERAL
+}
+
+model GalleryPhoto {
+  id        String   @id @default(cuid())
+  src       String
+  alt       String
+  event     String
+  year      Int
+  eventName String
+  createdAt DateTime @default(now())
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  photo     String?
+  year      Int
+  nimaqildi String?
+  quote     String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TimelineEntry {
+  id             String   @id @default(cuid())
+  year           String
+  title          String
+  description    String
+  presidentName  String
+  presidentPhoto String?
+  achievements   String[]
+  isDark         Boolean  @default(false)
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+}
