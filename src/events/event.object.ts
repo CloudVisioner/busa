@@ -30,8 +30,8 @@ export class EventObject {
   @Field()
   isUpcoming: boolean
 
-  @Field(() => [String])
-  photos: string[]
+  @Field(() => [String], { nullable: true })
+  photos?: string[]
 
   @Field()
   createdAt: Date

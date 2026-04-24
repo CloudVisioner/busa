@@ -2,6 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { EventsService } from './events.service'
 import { EventObject } from './event.object'
+import { PaginatedEvents } from './paginated-events.object'
 import { CreateEventInput } from './create-event.input'
 import { UpdateEventInput } from './update-event.input'
 import { GqlAuthGuard } from '../auth/gql-auth.guard'
@@ -10,7 +11,7 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard'
 export class EventsResolver {
   constructor(private eventsService: EventsService) {}
 
-  @Query(() => [EventObject])
+  @Query(() => PaginatedEvents)
   events(
     @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
     @Args('limit', { type: () => Int, defaultValue: 9 }) limit: number,

@@ -1,7 +1,8 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { ProjectsService } from './projects.service'
 import { ProjectObject } from './project.object'
+import { PaginatedProjects } from './paginated-projects.object'
 import { CreateProjectInput } from './create-project.input'
 import { UpdateProjectInput } from './update-project.input'
 import { GqlAuthGuard } from '../auth/gql-auth.guard'
@@ -10,9 +11,12 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard'
 export class ProjectsResolver {
   constructor(private projectsService: ProjectsService) {}
 
-  @Query(() => [ProjectObject])
-  projects() {
-    return this.projectsService.findAll()
+  @Query(() => PaginatedProjects)
+  projects(
+    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+  ) {
+    return this.projectsService.findAll(page, limit)
   }
 
   @Query(() => [ProjectObject])

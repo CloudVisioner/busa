@@ -1,7 +1,8 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { VisaArticlesService } from './visa-articles.service'
 import { VisaArticleObject } from './visa-article.object'
+import { PaginatedVisaArticles } from './paginated-visa-articles.object'
 import { CreateVisaArticleInput } from './create-visa-article.input'
 import { UpdateVisaArticleInput } from './update-visa-article.input'
 import { PrismaVisaType } from '../common/enums'
@@ -11,9 +12,12 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard'
 export class VisaArticlesResolver {
   constructor(private visaArticlesService: VisaArticlesService) {}
 
-  @Query(() => [VisaArticleObject])
-  visaArticles() {
-    return this.visaArticlesService.findAll()
+  @Query(() => PaginatedVisaArticles)
+  visaArticles(
+    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+  ) {
+    return this.visaArticlesService.findAll(page, limit)
   }
 
   @Query(() => VisaArticleObject, { nullable: true })

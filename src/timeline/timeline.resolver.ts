@@ -1,7 +1,8 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { TimelineService } from './timeline.service'
 import { TimelineEntryObject } from './timeline-entry.object'
+import { PaginatedTimeline } from './paginated-timeline.object'
 import { CreateTimelineEntryInput } from './create-timeline-entry.input'
 import { UpdateTimelineEntryInput } from './update-timeline-entry.input'
 import { GqlAuthGuard } from '../auth/gql-auth.guard'
@@ -10,9 +11,12 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard'
 export class TimelineResolver {
   constructor(private timelineService: TimelineService) {}
 
-  @Query(() => [TimelineEntryObject])
-  timeline() {
-    return this.timelineService.findAll()
+  @Query(() => PaginatedTimeline)
+  timeline(
+    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+  ) {
+    return this.timelineService.findAll(page, limit)
   }
 
   @UseGuards(GqlAuthGuard)

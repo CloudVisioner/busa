@@ -2,6 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { GalleryService } from './gallery.service'
 import { GalleryPhotoObject } from './gallery-photo.object'
+import { PaginatedGalleryPhotos } from './paginated-gallery-photos.object'
 import { CreateGalleryPhotoInput } from './create-gallery-photo.input'
 import { GqlAuthGuard } from '../auth/gql-auth.guard'
 
@@ -9,9 +10,12 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard'
 export class GalleryResolver {
   constructor(private galleryService: GalleryService) {}
 
-  @Query(() => [GalleryPhotoObject])
-  galleryPhotos() {
-    return this.galleryService.findAll()
+  @Query(() => PaginatedGalleryPhotos)
+  galleryPhotos(
+    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 20 }) limit: number,
+  ) {
+    return this.galleryService.findAll(page, limit)
   }
 
   @Query(() => [GalleryPhotoObject])

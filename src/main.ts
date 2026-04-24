@@ -1,16 +1,37 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
+import helmet from 'helmet'
+import morgan from 'morgan'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  }))
+
+  app.use(morgan('combined'))
+
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean) as string[],
+    methods: ['GET', 'POST'],
     credentials: true,
   })
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }))
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+    transformOptions: { enableImplicitConversion: true },
+  }))
+
+  app.enableShutdownHooks()
 
   const port = process.env.PORT || 3001
   await app.listen(port)

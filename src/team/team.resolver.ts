@@ -1,7 +1,8 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { TeamService } from './team.service'
 import { TeamMemberObject } from './team-member.object'
+import { PaginatedTeamMembers } from './paginated-team-members.object'
 import { CreateTeamMemberInput } from './create-team-member.input'
 import { UpdateTeamMemberInput } from './update-team-member.input'
 import { GqlAuthGuard } from '../auth/gql-auth.guard'
@@ -10,9 +11,12 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard'
 export class TeamResolver {
   constructor(private teamService: TeamService) {}
 
-  @Query(() => [TeamMemberObject])
-  teamMembers() {
-    return this.teamService.findAll()
+  @Query(() => PaginatedTeamMembers)
+  teamMembers(
+    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+  ) {
+    return this.teamService.findAll(page, limit)
   }
 
   @Query(() => TeamMemberObject, { nullable: true })

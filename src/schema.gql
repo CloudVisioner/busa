@@ -102,7 +102,7 @@ type EventObject {
   id: ID!
   isUpcoming: Boolean!
   location: String!
-  photos: [String!]!
+  photos: [String!]
   slug: String!
   title: String!
   type: EventTypeEnum!
@@ -125,6 +125,12 @@ type GalleryPhotoObject {
   id: ID!
   src: String!
   year: Int!
+}
+
+type HealthObject {
+  database: String!
+  status: String!
+  timestamp: String!
 }
 
 """
@@ -156,6 +162,48 @@ type Mutation {
   updateTeamMember(id: String!, input: UpdateTeamMemberInput!): TeamMemberObject!
   updateTimelineEntry(id: String!, input: UpdateTimelineEntryInput!): TimelineEntryObject!
   updateVisaArticle(id: String!, input: UpdateVisaArticleInput!): VisaArticleObject!
+}
+
+type PaginatedEvents {
+  items: [EventObject!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type PaginatedGalleryPhotos {
+  items: [GalleryPhotoObject!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type PaginatedProjects {
+  items: [ProjectObject!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type PaginatedTeamMembers {
+  items: [TeamMemberObject!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type PaginatedTimeline {
+  items: [TimelineEntryObject!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type PaginatedVisaArticles {
+  items: [VisaArticleObject!]!
+  limit: Int!
+  page: Int!
+  total: Int!
 }
 
 type ProjectObject {
@@ -190,20 +238,20 @@ type ProjectObject {
 
 type Query {
   event(slug: String!): EventObject
-  events(limit: Int! = 9, page: Int! = 1): [EventObject!]!
+  events(limit: Int! = 9, page: Int! = 1): PaginatedEvents!
   featuredProjects: [ProjectObject!]!
-  galleryPhotos: [GalleryPhotoObject!]!
+  galleryPhotos(limit: Int! = 20, page: Int! = 1): PaginatedGalleryPhotos!
   galleryPhotosByEvent(event: String!): [GalleryPhotoObject!]!
   galleryPhotosByYear(year: Int!): [GalleryPhotoObject!]!
-  health: String!
+  health: HealthObject!
   project(slug: String!): ProjectObject
-  projects: [ProjectObject!]!
+  projects(limit: Int! = 10, page: Int! = 1): PaginatedProjects!
   teamMember(id: String!): TeamMemberObject
-  teamMembers: [TeamMemberObject!]!
-  timeline: [TimelineEntryObject!]!
+  teamMembers(limit: Int! = 10, page: Int! = 1): PaginatedTeamMembers!
+  timeline(limit: Int! = 10, page: Int! = 1): PaginatedTimeline!
   upcomingEvents: [EventObject!]!
   visaArticle(slug: String!): VisaArticleObject
-  visaArticles: [VisaArticleObject!]!
+  visaArticles(limit: Int! = 10, page: Int! = 1): PaginatedVisaArticles!
   visaArticlesByType(visaType: VisaTypeEnum!): [VisaArticleObject!]!
 }
 
