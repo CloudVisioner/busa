@@ -1,12 +1,18 @@
-import { registerEnumType } from '@nestjs/graphql'
+import { registerEnumType } from '@nestjs/graphql';
 import {
   EventType as PrismaEventType,
   VisaType as PrismaVisaType,
   Role as PrismaRole,
-} from '@prisma/client'
+} from '@prisma/client';
 
-registerEnumType(PrismaEventType, { name: 'EventTypeEnum' })
-registerEnumType(PrismaVisaType, { name: 'VisaTypeEnum' })
-registerEnumType(PrismaRole, { name: 'RoleEnum' })
+export enum EventTimelineStatus {
+  UPCOMING = 'UPCOMING',
+  PAST = 'PAST',
+}
 
-export { PrismaEventType, PrismaVisaType, PrismaRole }
+registerEnumType(PrismaEventType, { name: 'EventTypeEnum' });
+registerEnumType(PrismaVisaType, { name: 'VisaTypeEnum' });
+registerEnumType(PrismaRole, { name: 'RoleEnum' });
+registerEnumType(EventTimelineStatus, { name: 'EventTimelineStatusEnum' });
+
+export { PrismaEventType, PrismaVisaType, PrismaRole };

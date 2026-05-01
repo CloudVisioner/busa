@@ -1,42 +1,38 @@
-import { Field, InputType } from '@nestjs/graphql'
-import { IsNotEmpty, IsOptional } from 'class-validator'
-import { PrismaEventType } from '../common/enums'
+import { Field, InputType } from '@nestjs/graphql';
+import { IsDateString, IsNotEmpty, IsOptional } from 'class-validator';
+import { PrismaEventType } from '../common/enums';
 
 @InputType()
 export class CreateEventInput {
   @Field()
   @IsNotEmpty()
-  title: string
+  title: string;
 
   @Field()
-  @IsNotEmpty()
-  slug: string
-
-  @Field()
-  @IsNotEmpty()
-  date: string
-
-  @Field()
-  @IsNotEmpty()
-  location: string
-
-  @Field()
-  @IsNotEmpty()
-  description: string
-
-  @Field()
-  @IsNotEmpty()
-  coverPhoto: string
+  @IsDateString()
+  date: string;
 
   @Field(() => PrismaEventType)
   @IsNotEmpty()
-  type: PrismaEventType
+  type: PrismaEventType;
 
-  @Field({ defaultValue: false })
-  @IsOptional()
-  isUpcoming: boolean
+  @Field()
+  @IsNotEmpty()
+  location: string;
 
-  @Field(() => [String], { defaultValue: [] })
+  @Field()
+  @IsNotEmpty()
+  description: string;
+
+  @Field({ nullable: true })
   @IsOptional()
-  photos: string[]
+  coverPhoto?: string;
+
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  photos?: string[];
+
+  @Field({ nullable: true })
+  @IsOptional()
+  attendance?: string;
 }

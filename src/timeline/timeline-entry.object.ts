@@ -1,34 +1,31 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql'
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class TimelineEntryObject {
   @Field(() => ID)
-  id: string
+  id: string;
 
   @Field()
-  year: string
+  year: string;
 
   @Field()
-  title: string
+  title: string;
 
   @Field()
-  description: string
-
-  @Field()
-  presidentName: string
+  description: string;
 
   @Field({ nullable: true })
-  presidentPhoto?: string
+  presidentName?: string;
 
   @Field(() => [String])
-  achievements: string[]
+  achievements: string[];
+
+  @Field({ nullable: true })
+  coverPhoto?: string;
 
   @Field()
-  isDark: boolean
-
-  @Field(() => Int)
-  order: number
+  createdAt: Date;
 
   @Field()
-  createdAt: Date
+  updatedAt: Date;
 }

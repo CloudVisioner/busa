@@ -1,10 +1,9 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql'
-import { ProjectObject } from './project.object'
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Project } from './entities/project.entity';
 
 @ObjectType()
 export class PaginatedProjects {
-  @Field(() => [ProjectObject]) items: ProjectObject[]
-  @Field(() => Int) total: number
-  @Field(() => Int) page: number
-  @Field(() => Int) limit: number
+  @Field(() => [Project]) items: Project[];
+  @Field(() => Int) total: number;
+  @Field() hasMore: boolean;
 }

@@ -1,34 +1,34 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql'
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class TeamMemberObject {
   @Field(() => ID)
-  id: string
+  id: string;
 
   @Field()
-  name: string
+  name: string;
 
   @Field()
-  role: string
+  role: string;
 
   @Field({ nullable: true })
-  photo?: string
+  photo?: string;
 
   @Field(() => Int)
-  year: number
+  year: number;
 
   @Field({ nullable: true })
-  nimaqildi?: string
+  nimaqildi?: string;
 
   @Field({ nullable: true })
-  quote?: string
+  quote?: string;
 
   @Field(() => Int)
-  order: number
+  order: number;
 
   @Field()
-  createdAt: Date
+  createdAt: Date;
 
   @Field()
-  updatedAt: Date
+  updatedAt: Date;
 }

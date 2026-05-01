@@ -1,14 +1,14 @@
-import { Field, ObjectType } from '@nestjs/graphql'
-import { PrismaRole } from '../../common/enums'
+import { Field, ObjectType } from '@nestjs/graphql';
+import { PrismaRole } from '../../common/enums';
 
 @ObjectType()
 export class AuthResponse {
   @Field()
-  token: string
+  token: string;
 
   @Field()
-  email: string
+  email: string;
 
   @Field(() => PrismaRole)
-  role: PrismaRole
+  role: PrismaRole;
 }

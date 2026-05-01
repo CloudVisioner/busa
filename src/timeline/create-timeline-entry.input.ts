@@ -1,14 +1,30 @@
-import { Field, InputType, Int } from '@nestjs/graphql'
-import { IsNotEmpty, IsOptional } from 'class-validator'
+import { Field, InputType } from '@nestjs/graphql';
+import { IsArray, IsNotEmpty, IsOptional } from 'class-validator';
 
-@InputType()
+@InputType('CreateTimelineInput')
 export class CreateTimelineEntryInput {
-  @Field() @IsNotEmpty() year: string
-  @Field() @IsNotEmpty() title: string
-  @Field() @IsNotEmpty() description: string
-  @Field() @IsNotEmpty() presidentName: string
-  @Field({ nullable: true }) @IsOptional() presidentPhoto?: string
-  @Field(() => [String]) achievements: string[]
-  @Field({ defaultValue: false }) @IsOptional() isDark: boolean
-  @Field(() => Int, { defaultValue: 0 }) @IsOptional() order: number
+  @Field()
+  @IsNotEmpty()
+  year: string;
+
+  @Field()
+  @IsNotEmpty()
+  title: string;
+
+  @Field()
+  @IsNotEmpty()
+  description: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  presidentName?: string;
+
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  achievements?: string[];
+
+  @Field({ nullable: true })
+  @IsOptional()
+  coverPhoto?: string;
 }

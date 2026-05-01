@@ -1,42 +1,43 @@
-import { Field, InputType } from '@nestjs/graphql'
-import { IsOptional } from 'class-validator'
-import { PrismaEventType } from '../common/enums'
+import { Field, InputType } from '@nestjs/graphql';
+import { IsDateString, IsOptional } from 'class-validator';
+import { PrismaEventType } from '../common/enums';
 
 @InputType()
 export class UpdateEventInput {
   @Field({ nullable: true })
   @IsOptional()
-  title?: string
+  title?: string;
+
+  @Field({ nullable: true })
+  @IsDateString()
+  @IsOptional()
+  date?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  isFeatured?: boolean;
 
   @Field({ nullable: true })
   @IsOptional()
-  slug?: string
+  location?: string;
 
   @Field({ nullable: true })
   @IsOptional()
-  date?: string
-
-  @Field({ nullable: true })
-  @IsOptional()
-  location?: string
-
-  @Field({ nullable: true })
-  @IsOptional()
-  description?: string
-
-  @Field({ nullable: true })
-  @IsOptional()
-  coverPhoto?: string
+  description?: string;
 
   @Field(() => PrismaEventType, { nullable: true })
   @IsOptional()
-  type?: PrismaEventType
+  type?: PrismaEventType;
 
   @Field({ nullable: true })
   @IsOptional()
-  isUpcoming?: boolean
+  coverPhoto?: string;
 
   @Field(() => [String], { nullable: true })
   @IsOptional()
-  photos?: string[]
+  photos?: string[];
+
+  @Field({ nullable: true })
+  @IsOptional()
+  attendance?: string;
 }

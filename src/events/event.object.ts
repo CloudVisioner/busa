@@ -1,41 +1,44 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql'
-import { PrismaEventType } from '../common/enums'
+import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { PrismaEventType } from '../common/enums';
 
 @ObjectType()
 export class EventObject {
   @Field(() => ID)
-  id: string
+  id: string;
 
   @Field()
-  title: string
+  title: string;
 
   @Field()
-  slug: string
+  slug: string;
 
   @Field()
-  date: string
+  date: string;
+
+  @Field(() => Boolean)
+  isFeatured: boolean;
 
   @Field()
-  location: string
+  location: string;
 
   @Field()
-  description: string
+  description: string;
 
-  @Field()
-  coverPhoto: string
+  @Field({ nullable: true })
+  coverPhoto?: string;
 
   @Field(() => PrismaEventType)
-  type: PrismaEventType
+  type: PrismaEventType;
+
+  @Field(() => [String])
+  photos: string[];
+
+  @Field({ nullable: true })
+  attendance?: string;
 
   @Field()
-  isUpcoming: boolean
-
-  @Field(() => [String], { nullable: true })
-  photos?: string[]
+  createdAt: Date;
 
   @Field()
-  createdAt: Date
-
-  @Field()
-  updatedAt: Date
+  updatedAt: Date;
 }
