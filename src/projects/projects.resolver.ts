@@ -15,6 +15,7 @@ export class ProjectsResolver {
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Project)
   createProject(@Args('input') input: CreateProjectInput) {
+    console.log('CreateProject input:', JSON.stringify(input, null, 2));
     return this.projectsService.create(input);
   }
 

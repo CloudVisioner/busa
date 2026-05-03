@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ProjectStatus as PrismaProjectStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectInput } from './create-project.input';
 import { UpdateProjectInput } from './update-project.input';
@@ -22,11 +22,6 @@ export class ProjectsService {
         description: sanitizedDescription,
         coverPhoto: input.coverPhoto,
         photos: input.photos ?? [],
-        icon: input.icon,
-        status: (input.status as PrismaProjectStatus | undefined) ?? PrismaProjectStatus.ACTIVE,
-        startDate: input.startDate,
-        endDate: input.endDate,
-        members: input.members ?? [],
       },
     });
   }
@@ -97,10 +92,6 @@ export class ProjectsService {
         { title: { contains: term, mode: 'insensitive' } },
         { description: { contains: term, mode: 'insensitive' } },
       ];
-    }
-
-    if (pagination?.type?.trim()) {
-      where.status = pagination.type.trim() as PrismaProjectStatus;
     }
 
     const [items, total] = await Promise.all([

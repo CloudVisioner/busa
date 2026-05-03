@@ -23,6 +23,7 @@ export class EventsService {
           id: true,
           title: true,
           slug: true,
+          status: true,
           date: true,
           isFeatured: true,
           attendance: true,
@@ -50,7 +51,6 @@ export class EventsService {
     const limit = pagination?.limit ?? 12;
     const offset = pagination?.offset ?? 0;
     const where: Prisma.EventWhereInput = {};
-    const now = new Date();
 
     if (pagination?.search?.trim()) {
       const term = pagination.search.trim();
@@ -64,11 +64,10 @@ export class EventsService {
       where.type = pagination.type.trim() as PrismaEventType;
     }
 
-    // Events are grouped by time window at query time.
     if (pagination?.status === EventTimelineStatus.UPCOMING) {
-      where.date = { gte: now };
+      where.status = EventTimelineStatus.UPCOMING;
     } else if (pagination?.status === EventTimelineStatus.PAST) {
-      where.date = { lt: now };
+      where.status = EventTimelineStatus.PAST;
     }
 
     const [items, total] = await Promise.all([
@@ -81,6 +80,7 @@ export class EventsService {
           id: true,
           title: true,
           slug: true,
+          status: true,
           date: true,
           isFeatured: true,
           attendance: true,
@@ -105,6 +105,69 @@ export class EventsService {
     };
   }
 
+  async findUpcoming() {
+    const items = await this.prisma.event.findMany({
+      where: { status: EventTimelineStatus.UPCOMING },
+      orderBy: { date: 'asc' },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        status: true,
+        date: true,
+        isFeatured: true,
+        attendance: true,
+        location: true,
+        type: true,
+        coverPhoto: true,
+        photos: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return items.map((item) => this.withSafeDate(item));
+  }
+
+  async findPastPaginated(limit = 12, offset = 0) {
+    const where: Prisma.EventWhereInput = {
+      status: EventTimelineStatus.PAST,
+    };
+    const [items, total] = await Promise.all([
+      this.prisma.event.findMany({
+        where,
+        orderBy: { date: 'desc' },
+        skip: offset,
+        take: limit,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          status: true,
+          date: true,
+          isFeatured: true,
+          attendance: true,
+          location: true,
+          type: true,
+          coverPhoto: true,
+          photos: true,
+          description: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      this.prisma.event.count({ where }),
+    ]);
+    const page = limit > 0 ? Math.floor(offset / limit) + 1 : 1;
+    return {
+      items: items.map((item) => this.withSafeDate(item)),
+      total,
+      hasMore: offset + limit < total,
+      page,
+      limit,
+    };
+  }
+
   async findOne(args: { id?: string; slug?: string }) {
     if (!args.id && !args.slug) {
       throw new BadRequestException('Provide either id or slug');
@@ -116,6 +179,7 @@ export class EventsService {
         id: true,
         title: true,
         slug: true,
+        status: true,
         date: true,
         isFeatured: true,
         attendance: true,
@@ -143,6 +207,7 @@ export class EventsService {
         id: true,
         title: true,
         slug: true,
+        status: true,
         date: true,
         isFeatured: true,
         attendance: true,
@@ -163,8 +228,8 @@ export class EventsService {
   async create(input: CreateEventInput) {
     const slug = await this.generateUniqueSlug(input.title);
     const sanitizedDescription = sanitizeRichText(input.description);
+    this.validatePhotosForStatus(input.photos, 'UPCOMING');
     const eventDate = new Date(input.date);
-    this.validatePhotosForEventDate(input.photos, eventDate);
     try {
       return await this.prisma.event.create({
         data: {
@@ -197,8 +262,7 @@ export class EventsService {
       input.description !== undefined
         ? (sanitizeRichText(input.description) ?? '')
         : undefined;
-    const effectiveDate = input.date ? new Date(input.date) : existing.date;
-    this.validatePhotosForEventDate(input.photos, effectiveDate);
+    this.validatePhotosForStatus(input.photos, existing.status);
 
     return this.prisma.event.update({
       where: { id },
@@ -221,6 +285,36 @@ export class EventsService {
     const existing = await this.prisma.event.findUnique({ where: { id } });
     if (!existing) throw Errors.NOT_FOUND('Event');
     return this.prisma.event.delete({ where: { id } });
+  }
+
+  async setEventStatus(id: string, status: string) {
+    const normalized = status.trim();
+    if (normalized !== 'UPCOMING' && normalized !== 'PAST') {
+      throw new BadRequestException('status must be UPCOMING or PAST');
+    }
+    const existing = await this.prisma.event.findUnique({ where: { id } });
+    if (!existing) throw Errors.NOT_FOUND('Event');
+    const updated = await this.prisma.event.update({
+      where: { id },
+      data: { status: normalized },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        status: true,
+        date: true,
+        isFeatured: true,
+        attendance: true,
+        location: true,
+        type: true,
+        coverPhoto: true,
+        photos: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return this.withSafeDate(updated);
   }
 
   async setFeaturedEvent(id: string) {
@@ -280,19 +374,19 @@ export class EventsService {
     return String(value);
   }
 
-  private validatePhotosForEventDate(
+  private validatePhotosForStatus(
     photos: string[] | undefined,
-    eventDate: Date,
+    storedStatus: string,
   ) {
-    if (!photos) return;
+    if (!photos?.length) return;
 
     if (photos.length > 5) {
       throw new BadRequestException('You can upload at most 5 photos per event');
     }
 
-    if (eventDate >= new Date()) {
+    if (storedStatus !== 'PAST') {
       throw new BadRequestException(
-        'Photos can only be added to archived (past) events',
+        'Photos can only be added when the event status is PAST (archived)',
       );
     }
   }

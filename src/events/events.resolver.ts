@@ -27,6 +27,19 @@ export class EventsResolver {
     return this.eventsService.findPaginated(pagination);
   }
 
+  @Query(() => [EventObject])
+  upcomingEvents() {
+    return this.eventsService.findUpcoming();
+  }
+
+  @Query(() => PaginatedEvents)
+  pastEvents(
+    @Args('limit', { type: () => Int, defaultValue: 12 }) limit: number,
+    @Args('offset', { type: () => Int, defaultValue: 0 }) offset: number,
+  ) {
+    return this.eventsService.findPastPaginated(limit, offset);
+  }
+
   @Query(() => EventObject, { nullable: true })
   event(
     @Args('id', { nullable: true }) id?: string,
@@ -44,6 +57,15 @@ export class EventsResolver {
   @Mutation(() => EventObject)
   createEvent(@Args('input') input: CreateEventInput) {
     return this.eventsService.create(input);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => EventObject)
+  setEventStatus(
+    @Args('id') id: string,
+    @Args('status') status: string,
+  ) {
+    return this.eventsService.setEventStatus(id, status);
   }
 
   @UseGuards(GqlAuthGuard)

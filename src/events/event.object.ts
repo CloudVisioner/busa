@@ -13,6 +13,9 @@ export class EventObject {
   slug: string;
 
   @Field()
+  status: string;
+
+  @Field()
   date: string;
 
   @Field(() => Boolean)

@@ -1,12 +1,4 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-
-export enum ProjectStatus {
-  ACTIVE = 'ACTIVE',
-  COMPLETED = 'COMPLETED',
-  UPCOMING = 'UPCOMING',
-}
-
-registerEnumType(ProjectStatus, { name: 'ProjectStatus' });
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Project {
@@ -27,21 +19,6 @@ export class Project {
 
   @Field(() => [String])
   photos: string[];
-
-  @Field({ nullable: true })
-  icon?: string;
-
-  @Field(() => ProjectStatus)
-  status: ProjectStatus;
-
-  @Field({ nullable: true })
-  startDate?: string;
-
-  @Field({ nullable: true })
-  endDate?: string;
-
-  @Field(() => [String])
-  members: string[];
 
   @Field()
   isFeatured: boolean;

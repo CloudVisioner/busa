@@ -1,1 +1,1 @@
-export { Project as ProjectObject, ProjectStatus } from './entities/project.entity';
+export { Project } from './entities/project.entity';

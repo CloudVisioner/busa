@@ -30,31 +30,23 @@ input CreateGalleryPhotoInput {
 input CreateProjectInput {
   coverPhoto: String
   description: String!
-  endDate: String
-  icon: String
-  members: [String!]
   photos: [String!]
-  startDate: String
-  status: ProjectStatus
   title: String!
 }
 
 input CreateTeamMemberInput {
   name: String!
-  nimaqildi: String
   order: Int! = 0
   photo: String
-  quote: String
   role: String!
   year: Int!
 }
 
 input CreateTimelineInput {
-  achievements: [String!]
   coverPhoto: String
   description: String!
   presidentName: String
-  title: String!
+  quote: String
   year: String!
 }
 
@@ -87,6 +79,7 @@ type EventObject {
   location: String!
   photos: [String!]!
   slug: String!
+  status: String!
   title: String!
   type: EventTypeEnum!
   updatedAt: DateTime!
@@ -145,6 +138,7 @@ type Mutation {
   deleteVisaArticle(id: String!): VisaArticleObject!
   login(input: LoginInput!): AuthResponse!
   removeProject(id: String!): Project!
+  setEventStatus(id: String!, status: String!): EventObject!
   setFeaturedEvent(id: String!): EventObject!
   setFeaturedProject(id: String!): Project!
   signup(input: SignupInput!): AuthResponse!
@@ -211,23 +205,12 @@ type Project {
   coverPhoto: String
   createdAt: DateTime!
   description: String!
-  endDate: String
-  icon: String
   id: String!
   isFeatured: Boolean!
-  members: [String!]!
   photos: [String!]!
   slug: String!
-  startDate: String
-  status: ProjectStatus!
   title: String!
   updatedAt: DateTime!
-}
-
-enum ProjectStatus {
-  ACTIVE
-  COMPLETED
-  UPCOMING
 }
 
 type Query {
@@ -243,12 +226,14 @@ type Query {
   paginatedGalleryPhotos(pagination: PaginationInput): PaginatedGalleryPhotos!
   paginatedProjects(pagination: PaginationInput): PaginatedProjects!
   paginatedVisaArticles(pagination: PaginationInput): PaginatedVisaArticles!
+  pastEvents(limit: Int! = 12, offset: Int! = 0): PaginatedEvents!
   project(id: String!): Project
   projectBySlug(slug: String!): Project
   projects: [Project!]!
   teamMember(id: String!): TeamMemberObject
   teamMembers(limit: Int! = 10, page: Int! = 1): PaginatedTeamMembers!
   timelines(limit: Int! = 10, page: Int! = 1): PaginatedTimeline!
+  upcomingEvents: [EventObject!]!
   visaArticle(slug: String!): VisaArticleObject
   visaArticles(limit: Int! = 10, page: Int! = 1): PaginatedVisaArticles!
   visaArticlesByType(visaType: VisaTypeEnum!): [VisaArticleObject!]!
@@ -268,23 +253,20 @@ type TeamMemberObject {
   createdAt: DateTime!
   id: ID!
   name: String!
-  nimaqildi: String
   order: Int!
   photo: String
-  quote: String
   role: String!
   updatedAt: DateTime!
   year: Int!
 }
 
 type TimelineEntryObject {
-  achievements: [String!]!
   coverPhoto: String
   createdAt: DateTime!
   description: String!
   id: ID!
   presidentName: String
-  title: String!
+  quote: String
   updatedAt: DateTime!
   year: String!
 }
@@ -304,32 +286,24 @@ input UpdateEventInput {
 input UpdateProjectInput {
   coverPhoto: String
   description: String
-  endDate: String
-  icon: String
   id: String!
-  members: [String!]
   photos: [String!]
-  startDate: String
-  status: ProjectStatus
   title: String
 }
 
 input UpdateTeamMemberInput {
   name: String
-  nimaqildi: String
   order: Int
   photo: String
-  quote: String
   role: String
   year: Int
 }
 
 input UpdateTimelineInput {
-  achievements: [String!]
   coverPhoto: String
   description: String
   presidentName: String
-  title: String
+  quote: String
   year: String
 }
 

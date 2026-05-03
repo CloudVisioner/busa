@@ -36,10 +36,12 @@ export class UploadService {
     const timestamp = Date.now();
     const safeName = file.originalname.replace(/\s+/g, '-');
     const path = `${folder}/${timestamp}-${safeName}`;
+    const rawMime = (file.mimetype ?? '').trim().toLowerCase();
+    const contentType = rawMime === 'image/jpg' ? 'image/jpeg' : file.mimetype;
 
     const { error } = await this.supabase.storage
       .from(this.bucket)
-      .upload(path, file.buffer, { contentType: file.mimetype });
+      .upload(path, file.buffer, { contentType });
 
     if (error)
       throw new InternalServerErrorException(`Upload failed: ${error.message}`);

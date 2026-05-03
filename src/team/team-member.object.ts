@@ -17,12 +17,6 @@ export class TeamMemberObject {
   @Field(() => Int)
   year: number;
 
-  @Field({ nullable: true })
-  nimaqildi?: string;
-
-  @Field({ nullable: true })
-  quote?: string;
-
   @Field(() => Int)
   order: number;
 
