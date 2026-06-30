@@ -1,44 +1,44 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql'
-import { PrismaVisaType } from '../common/enums'
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { PrismaVisaType } from '../common/enums';
 
 @ObjectType()
 export class VisaArticleObject {
   @Field(() => ID)
-  id: string
+  id: string;
 
   @Field()
-  title: string
+  title: string;
 
   @Field()
-  slug: string
+  slug: string;
 
   @Field()
-  content: string
+  content: string;
 
   @Field(() => PrismaVisaType)
-  visaType: PrismaVisaType
+  visaType: PrismaVisaType;
 
   @Field(() => Int)
-  readTime: number
+  readTime: number;
 
   @Field()
-  description: string
+  description: string;
 
   @Field()
-  isOutdated: boolean
+  isOutdated: boolean;
 
   @Field({ nullable: true })
-  outdatedLink?: string
+  outdatedLink?: string;
 
   @Field({ nullable: true })
-  featureImage?: string
+  featureImage?: string;
 
   @Field()
-  author: string
+  author: string;
 
   @Field()
-  createdAt: Date
+  createdAt: Date;
 
   @Field()
-  updatedAt: Date
+  updatedAt: Date;
 }

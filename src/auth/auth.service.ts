@@ -22,6 +22,23 @@ export class AuthService {
     return { token, email: user.email, role: user.role }
   }
 
+  async signup(email: string, password: string) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const existing = await this.prisma.user.findUnique({ where: { email: normalizedEmail } })
+    if (existing) throw Errors.ALREADY_EXISTS('User', 'email')
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = await this.prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        password: hashedPassword,
+      },
+    })
+
+    const token = this.jwtService.sign({ sub: user.id, role: user.role })
+    return { token, email: user.email, role: user.role }
+  }
+
   async validateUser(userId: string) {
     return this.prisma.user.findUnique({ where: { id: userId } })
   }

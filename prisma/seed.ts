@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, type Prisma, type EventType } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 import * as bcrypt from 'bcrypt'
@@ -19,70 +19,94 @@ async function main() {
   await prisma.user.upsert({
     where: { email: 'admin@busa.uz' },
     update: {},
-    create: { email: 'admin@busa.uz', password: hashedPassword, role: 'ADMIN' },
+    create: { email: 'admin@busa.uz', password: hashedPassword, role: 'SUPER_ADMIN' },
   })
   console.log('✓ Admin user created')
 
-  const events = [
+  const mentorPassword = await bcrypt.hash('BusaMentor2025', 10)
+  await prisma.user.upsert({
+    where: { email: 'mentor@busa.uz' },
+    update: {},
+    create: { email: 'mentor@busa.uz', password: mentorPassword, role: 'ADMIN' },
+  })
+  console.log('✓ Mentor user created')
+
+  type EventSeed = {
+    title: string
+    slug: string
+    date: string
+    status: string
+    location: string
+    description: string
+    coverPhoto: string
+    type: EventType
+    photos: string[]
+  }
+
+  const events: EventSeed[] = [
     {
       title: "Navro'z 2025",
       slug: 'navroz-2025',
-      date: '21 Mart 2025',
+      date: '2025-03-21T12:00:00.000Z',
+      status: 'UPCOMING',
       location: 'Busan PNUK',
       description: "BUSA ning yillik Navro'z bayrami",
       coverPhoto: 'https://placeholder.com/navroz.jpg',
-      type: 'MADANIY' as const,
-      isUpcoming: false,
+      type: 'MADANIY',
       photos: [],
     },
     {
       title: 'Summer Trip 2025',
       slug: 'summer-trip-2025',
-      date: 'Iyun 2025',
+      date: '2025-06-15T12:00:00.000Z',
+      status: 'UPCOMING',
       location: 'Geoje & Busan Coast',
       description: 'Yozgi sayohat',
       coverPhoto: 'https://placeholder.com/trip.jpg',
-      type: 'TRIP' as const,
-      isUpcoming: true,
+      type: 'TRIP',
       photos: [],
     },
     {
       title: 'BUSA New Year Gala',
       slug: 'new-year-gala-2024',
-      date: '28 Dek 2024',
+      date: '2024-12-28T12:00:00.000Z',
+      status: 'PAST',
       location: 'Busan',
       description: 'Yangi yil bayrami',
       coverPhoto: 'https://placeholder.com/gala.jpg',
-      type: 'MADANIY' as const,
-      isUpcoming: false,
+      type: 'MADANIY',
       photos: [],
     },
     {
       title: 'Mini-Football Cup 2024',
       slug: 'football-cup-2024',
-      date: '12 May 2024',
+      date: '2024-05-12T12:00:00.000Z',
+      status: 'PAST',
       location: 'Busan Sports Center',
       description: 'Mini futbol turniri',
       coverPhoto: 'https://placeholder.com/football.jpg',
-      type: 'SPORT' as const,
-      isUpcoming: false,
+      type: 'SPORT',
       photos: [],
     },
     {
       title: 'CV & Interview Workshop',
       slug: 'cv-workshop-2024',
-      date: '18 Yan 2024',
+      date: '2024-01-18T12:00:00.000Z',
+      status: 'PAST',
       location: 'PNUK',
       description: 'CV va intervyu tayyorlash',
       coverPhoto: 'https://placeholder.com/workshop.jpg',
-      type: 'WORKSHOP' as const,
-      isUpcoming: false,
+      type: 'WORKSHOP',
       photos: [],
     },
   ]
 
   for (const event of events) {
-    await prisma.event.upsert({ where: { slug: event.slug }, update: {}, create: event })
+    await prisma.event.upsert({
+      where: { slug: event.slug },
+      update: { status: event.status } as Prisma.EventUncheckedUpdateInput,
+      create: event,
+    })
   }
   console.log('✓ Events seeded')
 
@@ -90,67 +114,59 @@ async function main() {
     {
       title: 'Sayohat (Trip)',
       slug: 'sayohat-trip',
-      summary: "Koreyaning go'zal maskanlariga sayohatlar",
       description: "Koreyaning tarixiy va go'zal maskanlariga birgalikda unutilmas sayohatlar",
       coverPhoto: 'https://placeholder.com/trip.jpg',
-      category: 'Adventure',
-      tags: ['sayohat', 'jamiyat'],
+      photos: [],
       isFeatured: true,
     },
     {
       title: 'Speaking Class',
       slug: 'speaking-class',
-      summary: "Ingliz va Koreys tillarida erkin so'zlashish",
       description: "Ingliz va Koreys tillarida erkin so'zlashish ko'nikmalarini rivojlantiring",
       coverPhoto: 'https://placeholder.com/speaking.jpg',
-      category: 'Academic',
-      tags: ['til', "ta'lim"],
-      isFeatured: true,
+      photos: [],
+      isFeatured: false,
     },
     {
       title: 'Korean Club',
       slug: 'korean-club',
-      summary: "Koreya madaniyatini o'rganish",
       description: "Koreya madaniyati va urf-odatlarini chuqur o'rganish",
       coverPhoto: 'https://placeholder.com/korean.jpg',
-      category: 'Culture',
-      tags: ['madaniyat', 'koreya'],
-      isFeatured: true,
+      photos: [],
+      isFeatured: false,
     },
     {
       title: 'Book Club',
       slug: 'book-club',
-      summary: 'Kitoblar tahlili va muhokamasi',
       description: 'Dunyoqarashni kengaytiruvchi asarlar mutolaasi',
       coverPhoto: 'https://placeholder.com/book.jpg',
-      category: 'Intellect',
-      tags: ['kitob', 'tahlil'],
+      photos: [],
       isFeatured: false,
     },
     {
       title: 'BUSA Academy',
       slug: 'busa-academy',
-      summary: "Professional ko'nikmalar rivojlantirish",
       description: "Soft skills va shaxsiy rivojlanish bo'yicha mahorat darslari",
       coverPhoto: 'https://placeholder.com/academy.jpg',
-      category: 'Growth',
-      tags: ['akademiya', 'rivojlanish'],
+      photos: [],
       isFeatured: false,
     },
     {
       title: 'Tech Talk',
       slug: 'tech-talk',
-      summary: 'Texnologiya va innovatsiya suhbatlari',
       description: 'Zamonaviy texnologiyalar va IT trendlari haqida ekspertlar suhbati',
       coverPhoto: 'https://placeholder.com/tech.jpg',
-      category: 'Future',
-      tags: ['texnologiya', 'it'],
+      photos: [],
       isFeatured: false,
     },
   ]
 
   for (const project of projects) {
-    await prisma.project.upsert({ where: { slug: project.slug }, update: {}, create: project })
+    await prisma.project.upsert({
+      where: { slug: project.slug },
+      update: {},
+      create: project,
+    })
   }
   console.log('✓ Projects seeded')
 
@@ -201,32 +217,24 @@ async function main() {
       name: 'Azamat Karimov',
       role: 'Prezident',
       year: 2025,
-      nimaqildi: 'BUSA platformasini yaratdi va hamjamiyatni raqamlashtirdi',
-      quote: '"Jamoa kuchi individual qiyinchiliklarni yengadi"',
       order: 1,
     },
     {
       name: 'Madina Islomova',
       role: 'Vice President',
       year: 2025,
-      nimaqildi: "Tadbirlarni tashkil etdi va a'zolar sonini ikki baravar oshirdi",
-      quote: '"Birgalikda biz ko\'proq narsaga erishamiz"',
       order: 2,
     },
     {
       name: "Jahongir To'raev",
       role: 'Project Manager',
       year: 2025,
-      nimaqildi: 'Speaking Class va Book Club loyihalarini boshqardi',
-      quote: '"Har bir loyiha yangi imkoniyat"',
       order: 3,
     },
     {
       name: 'Shahnoza Abduqodirova',
       role: 'Design Lead',
       year: 2025,
-      nimaqildi: "BUSA vizual identifikatsiyasini yaratdi",
-      quote: '"Dizayn - bu muammolarni hal qilish san\'ati"',
       order: 4,
     },
   ]
@@ -243,53 +251,35 @@ async function main() {
   const timeline = [
     {
       year: '2021',
-      title: 'Asos solindi',
       description: "5 nafar talaba Busanda ilk bor yig'ildi",
       presidentName: 'Jamal Khudaybergenov',
-      achievements: ["BUSA tashkil etildi", 'Telegram guruhi yaratildi', 'Ilk 5 a\'zo'],
-      isDark: false,
-      order: 1,
     },
     {
       year: '2022',
-      title: "Ilk Navro'z",
       description: "50 dan ortiq ishtirokchi bilan birinchi Navro'z",
       presidentName: 'Jamal Khudaybergenov',
-      achievements: ["50+ a'zo", 'Book Club tashkil etildi', 'Telegram 100 a\'zo'],
-      isDark: true,
-      order: 2,
     },
     {
       year: '2023',
-      title: 'Masshtab kengayishi',
       description: '500 Telegram a\'zosi va Speaking Club',
       presidentName: 'Jamal Khudaybergenov',
-      achievements: ["500 Telegram a'zosi", 'Speaking Club', 'Birinchi sayohat'],
-      isDark: false,
-      order: 3,
     },
     {
       year: '2024',
-      title: "Raqamli o'sish",
       description: '1,000 Telegram va 5,000 Instagram',
       presidentName: 'Azamat Karimov',
-      achievements: ['1,000 Telegram', '5,000 Instagram', 'Koreys tili kurslari'],
-      isDark: true,
-      order: 4,
     },
     {
       year: '2025',
-      title: 'Kelajak platformasi',
       description: 'BUSA platformasi ishga tushdi',
       presidentName: 'Azamat Karimov',
-      achievements: ['BUSA platform', 'Viza bo\'limi', '18,155 Uzbek in Korea'],
-      isDark: false,
-      order: 5,
     },
   ]
 
   for (const entry of timeline) {
-    await prisma.timelineEntry.create({ data: entry }).catch(() => {})
+    await prisma.timelineEntry
+      .create({ data: entry as Prisma.TimelineEntryCreateInput })
+      .catch(() => {})
   }
   console.log('✓ Timeline seeded')
 

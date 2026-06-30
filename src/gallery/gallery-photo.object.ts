@@ -1,25 +1,25 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql'
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class GalleryPhotoObject {
   @Field(() => ID)
-  id: string
+  id: string;
 
   @Field()
-  src: string
+  src: string;
 
   @Field()
-  alt: string
+  alt: string;
 
   @Field()
-  event: string
+  event: string;
 
   @Field(() => Int)
-  year: number
+  year: number;
 
   @Field()
-  eventName: string
+  eventName: string;
 
   @Field()
-  createdAt: Date
+  createdAt: Date;
 }

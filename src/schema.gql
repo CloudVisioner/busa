@@ -9,13 +9,12 @@ type AuthResponse {
 }
 
 input CreateEventInput {
-  coverPhoto: String!
+  attendance: String
+  coverPhoto: String
   date: String!
   description: String!
-  isUpcoming: Boolean! = false
   location: String!
-  photos: [String!]! = []
-  slug: String!
+  photos: [String!]
   title: String!
   type: EventTypeEnum!
 }
@@ -29,50 +28,25 @@ input CreateGalleryPhotoInput {
 }
 
 input CreateProjectInput {
-  aboutParagraphs: [String!]
-  aboutTitle: String
-  category: String!
-  coverPhoto: String!
-  ctaPrimaryLabel: String
-  ctaSecondaryLabel: String
-  ctaSubtitle: String
-  ctaTitle: String
+  coverPhoto: String
   description: String!
-  features: JSON
-  galleryImages: JSON
-  gallerySubtitle: String
-  galleryTitle: String
-  heroDisplayTitle: String
-  heroEyebrow: String
-  heroImage: String
-  heroSubtitle: String
-  isFeatured: Boolean! = false
-  processSteps: JSON
-  processTitle: String
-  slug: String!
-  summary: String!
-  tags: [String!]!
+  photos: [String!]
   title: String!
 }
 
 input CreateTeamMemberInput {
   name: String!
-  nimaqildi: String
   order: Int! = 0
   photo: String
-  quote: String
   role: String!
   year: Int!
 }
 
-input CreateTimelineEntryInput {
-  achievements: [String!]!
+input CreateTimelineInput {
+  coverPhoto: String
   description: String!
-  isDark: Boolean! = false
-  order: Int! = 0
-  presidentName: String!
-  presidentPhoto: String
-  title: String!
+  presidentName: String
+  quote: String
   year: String!
 }
 
@@ -95,18 +69,25 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type EventObject {
-  coverPhoto: String!
+  attendance: String
+  coverPhoto: String
   createdAt: DateTime!
   date: String!
   description: String!
   id: ID!
-  isUpcoming: Boolean!
+  isFeatured: Boolean!
   location: String!
-  photos: [String!]
+  photos: [String!]!
   slug: String!
+  status: String!
   title: String!
   type: EventTypeEnum!
   updatedAt: DateTime!
+}
+
+enum EventTimelineStatusEnum {
+  PAST
+  UPCOMING
 }
 
 enum EventTypeEnum {
@@ -146,25 +127,30 @@ input LoginInput {
 type Mutation {
   createEvent(input: CreateEventInput!): EventObject!
   createGalleryPhoto(input: CreateGalleryPhotoInput!): GalleryPhotoObject!
-  createProject(input: CreateProjectInput!): ProjectObject!
+  createProject(input: CreateProjectInput!): Project!
   createTeamMember(input: CreateTeamMemberInput!): TeamMemberObject!
-  createTimelineEntry(input: CreateTimelineEntryInput!): TimelineEntryObject!
+  createTimeline(input: CreateTimelineInput!): TimelineEntryObject!
   createVisaArticle(input: CreateVisaArticleInput!): VisaArticleObject!
   deleteEvent(id: String!): EventObject!
   deleteGalleryPhoto(id: String!): GalleryPhotoObject!
-  deleteProject(id: String!): ProjectObject!
   deleteTeamMember(id: String!): TeamMemberObject!
-  deleteTimelineEntry(id: String!): TimelineEntryObject!
+  deleteTimeline(id: String!): TimelineEntryObject!
   deleteVisaArticle(id: String!): VisaArticleObject!
   login(input: LoginInput!): AuthResponse!
+  removeProject(id: String!): Project!
+  setEventStatus(id: String!, status: String!): EventObject!
+  setFeaturedEvent(id: String!): EventObject!
+  setFeaturedProject(id: String!): Project!
+  signup(input: SignupInput!): AuthResponse!
   updateEvent(id: String!, input: UpdateEventInput!): EventObject!
-  updateProject(id: String!, input: UpdateProjectInput!): ProjectObject!
+  updateProject(input: UpdateProjectInput!): Project!
   updateTeamMember(id: String!, input: UpdateTeamMemberInput!): TeamMemberObject!
-  updateTimelineEntry(id: String!, input: UpdateTimelineEntryInput!): TimelineEntryObject!
+  updateTimeline(id: String!, input: UpdateTimelineInput!): TimelineEntryObject!
   updateVisaArticle(id: String!, input: UpdateVisaArticleInput!): VisaArticleObject!
 }
 
 type PaginatedEvents {
+  hasMore: Boolean!
   items: [EventObject!]!
   limit: Int!
   page: Int!
@@ -172,6 +158,7 @@ type PaginatedEvents {
 }
 
 type PaginatedGalleryPhotos {
+  hasMore: Boolean!
   items: [GalleryPhotoObject!]!
   limit: Int!
   page: Int!
@@ -179,9 +166,8 @@ type PaginatedGalleryPhotos {
 }
 
 type PaginatedProjects {
-  items: [ProjectObject!]!
-  limit: Int!
-  page: Int!
+  hasMore: Boolean!
+  items: [Project!]!
   total: Int!
 }
 
@@ -200,55 +186,53 @@ type PaginatedTimeline {
 }
 
 type PaginatedVisaArticles {
+  hasMore: Boolean!
   items: [VisaArticleObject!]!
   limit: Int!
   page: Int!
   total: Int!
 }
 
-type ProjectObject {
-  aboutParagraphs: [String!]
-  aboutTitle: String
-  category: String!
-  coverPhoto: String!
+input PaginationInput {
+  limit: Int! = 12
+  offset: Int! = 0
+  search: String
+  status: EventTimelineStatusEnum
+  type: String
+}
+
+type Project {
+  coverPhoto: String
   createdAt: DateTime!
-  ctaPrimaryLabel: String
-  ctaSecondaryLabel: String
-  ctaSubtitle: String
-  ctaTitle: String
   description: String!
-  features: JSON
-  galleryImages: JSON
-  gallerySubtitle: String
-  galleryTitle: String
-  heroDisplayTitle: String
-  heroEyebrow: String
-  heroImage: String
-  heroSubtitle: String
-  id: ID!
+  id: String!
   isFeatured: Boolean!
-  processSteps: JSON
-  processTitle: String
+  photos: [String!]!
   slug: String!
-  summary: String!
-  tags: [String!]!
   title: String!
   updatedAt: DateTime!
 }
 
 type Query {
-  event(slug: String!): EventObject
+  event(id: String, slug: String): EventObject
   events(limit: Int! = 9, page: Int! = 1): PaginatedEvents!
-  featuredProjects: [ProjectObject!]!
+  featuredEvent: EventObject
+  featuredProject: Project
   galleryPhotos(limit: Int! = 20, page: Int! = 1): PaginatedGalleryPhotos!
   galleryPhotosByEvent(event: String!): [GalleryPhotoObject!]!
   galleryPhotosByYear(year: Int!): [GalleryPhotoObject!]!
   health: HealthObject!
-  project(slug: String!): ProjectObject
-  projects(limit: Int! = 10, page: Int! = 1): PaginatedProjects!
+  paginatedEvents(pagination: PaginationInput): PaginatedEvents!
+  paginatedGalleryPhotos(pagination: PaginationInput): PaginatedGalleryPhotos!
+  paginatedProjects(pagination: PaginationInput): PaginatedProjects!
+  paginatedVisaArticles(pagination: PaginationInput): PaginatedVisaArticles!
+  pastEvents(limit: Int! = 12, offset: Int! = 0): PaginatedEvents!
+  project(id: String!): Project
+  projectBySlug(slug: String!): Project
+  projects: [Project!]!
   teamMember(id: String!): TeamMemberObject
   teamMembers(limit: Int! = 10, page: Int! = 1): PaginatedTeamMembers!
-  timeline(limit: Int! = 10, page: Int! = 1): PaginatedTimeline!
+  timelines(limit: Int! = 10, page: Int! = 1): PaginatedTimeline!
   upcomingEvents: [EventObject!]!
   visaArticle(slug: String!): VisaArticleObject
   visaArticles(limit: Int! = 10, page: Int! = 1): PaginatedVisaArticles!
@@ -260,89 +244,66 @@ enum RoleEnum {
   SUPER_ADMIN
 }
 
+input SignupInput {
+  email: String!
+  password: String!
+}
+
 type TeamMemberObject {
   createdAt: DateTime!
   id: ID!
   name: String!
-  nimaqildi: String
   order: Int!
   photo: String
-  quote: String
   role: String!
   updatedAt: DateTime!
   year: Int!
 }
 
 type TimelineEntryObject {
-  achievements: [String!]!
+  coverPhoto: String
   createdAt: DateTime!
   description: String!
   id: ID!
-  isDark: Boolean!
-  order: Int!
-  presidentName: String!
-  presidentPhoto: String
-  title: String!
+  presidentName: String
+  quote: String
+  updatedAt: DateTime!
   year: String!
 }
 
 input UpdateEventInput {
+  attendance: String
   coverPhoto: String
   date: String
   description: String
-  isUpcoming: Boolean
+  isFeatured: Boolean
   location: String
   photos: [String!]
-  slug: String
   title: String
   type: EventTypeEnum
 }
 
 input UpdateProjectInput {
-  aboutParagraphs: [String!]
-  aboutTitle: String
-  category: String
   coverPhoto: String
-  ctaPrimaryLabel: String
-  ctaSecondaryLabel: String
-  ctaSubtitle: String
-  ctaTitle: String
   description: String
-  features: JSON
-  galleryImages: JSON
-  gallerySubtitle: String
-  galleryTitle: String
-  heroDisplayTitle: String
-  heroEyebrow: String
-  heroImage: String
-  heroSubtitle: String
-  isFeatured: Boolean
-  processSteps: JSON
-  processTitle: String
-  slug: String
-  summary: String
-  tags: [String!]
+  id: String!
+  photos: [String!]
   title: String
 }
 
 input UpdateTeamMemberInput {
   name: String
-  nimaqildi: String
   order: Int
   photo: String
-  quote: String
   role: String
   year: Int
 }
 
-input UpdateTimelineEntryInput {
-  achievements: [String!]
+input UpdateTimelineInput {
+  coverPhoto: String
   description: String
-  isDark: Boolean
-  order: Int
   presidentName: String
-  presidentPhoto: String
-  title: String
+  quote: String
   year: String
 }
 
