@@ -14,7 +14,7 @@ A community platform for Uzbek students living in South Korea (Busan). Built sol
 
 ## Tech stack
 
-- **Backend:** NestJS, Prisma ORM, Supabase
+- **Backend:** NestJS, GraphQL, Prisma ORM, Supabase
 - **Database:** PostgreSQL (via Supabase)
 - **Auth:** JWT, role-based access control
 - **Deployment:** Linux VPS, Docker, Nginx
